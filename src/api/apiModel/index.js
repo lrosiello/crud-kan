@@ -10,7 +10,6 @@ const pool = new Pool({
   port: "5432",
 });
 
-
 //GET ALL
 const getCategories = async () => {
   try {
@@ -31,8 +30,6 @@ const getLayers = async () => {
   }
 };
 
-
-
 //GET BY ID
 const getCategoryById = async (id) => {
   try {
@@ -49,10 +46,9 @@ const getCategoryById = async (id) => {
 
 const getLayerById = async (id) => {
   try {
-    const response = await pool.query(
-      "SELECT * FROM capas WHERE id = $1",
-      [id]
-    );
+    const response = await pool.query("SELECT * FROM capas WHERE id = $1", [
+      id,
+    ]);
     return response.rows[0];
   } catch (error) {
     console.error(error);
@@ -60,9 +56,42 @@ const getLayerById = async (id) => {
   }
 };
 
+//CREATE
+
+const addCategory = async (nombreCategoria, descripcion, numeroOrden) => {
+  try {
+    const exists = await pool.query(
+      "SELECT * FROM categorias WHERE nombre_categoria = $1",
+      [nombreCategoria]
+    );
+
+    if (exists.rows.length === 0) {
+      const response = await pool.query(
+        "INSERT INTO categorias (nombre_categoria, descripcion, numero_orden) VALUES ($1, $2, $3)",
+        [nombreCategoria, descripcion, numeroOrden]
+      );
+
+      const newCategory = await pool.query(
+        "SELECT * FROM categorias WHERE nombre_categoria = $1",
+        [nombreCategoria]
+      );
+
+      return newCategory.rows[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
+
+
 module.exports = {
   getCategories,
   getLayers,
   getCategoryById,
-  getLayerById
+  getLayerById,
+  addCategory,
 };

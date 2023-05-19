@@ -2,7 +2,6 @@
 
 const apiModel = require("../apiModel/index");
 
-
 //GET ALL
 const getCategories = async (req, res, next) => {
   try {
@@ -25,7 +24,6 @@ const getLayers = async (req, res, next) => {
   }
   next();
 };
-
 
 //GET BY ID
 const getCategoryById = async (req, res, next) => {
@@ -70,9 +68,34 @@ const getLayerById = async (req, res, next) => {
   next();
 };
 
+const addCategory = async (req, res, next) => {
+  try {
+    const { nombreCategoria, descripcion, numeroOrden } = req.body;
+
+    const newCategory = await apiModel.addCategory(nombreCategoria, descripcion, numeroOrden);
+    if(newCategory === null){
+      res.status(500).send("This category already exists, operation aborted");
+    }else{
+      res.status(200).json({
+        message: "Category added successfully",
+        category: newCategory,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
 module.exports = {
   getCategories,
   getLayers,
   getCategoryById,
-  getLayerById
+  getLayerById,
+  addCategory,
 };
+
+
+
+

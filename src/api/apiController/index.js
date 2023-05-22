@@ -71,16 +71,44 @@ const getLayerById = async (req, res, next) => {
 const addCategory = async (req, res, next) => {
   try {
     const { nombreCategoria, descripcion, numeroOrden } = req.body;
-
-    const newCategory = await apiModel.addCategory(nombreCategoria, descripcion, numeroOrden);
-    if(newCategory === null){
-      res.status(500).send("This category already exists, operation aborted");
+    if(nombreCategoria){
+      const newCategory = await apiModel.addCategory(nombreCategoria, descripcion, numeroOrden);
+      if(newCategory === null){
+        res.status(500).send("This category already exists, operation aborted");
+      }else{
+        res.status(200).json({
+          message: "Category added successfully",
+          category: newCategory,
+        });
+      }
     }else{
-      res.status(200).json({
-        message: "Category added successfully",
-        category: newCategory,
-      });
+      res.status(500).send("Category name must be inserted");
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
+const addLayer = async (req, res, next) => {
+  try {
+    const { nombreCapa, descripcion, numeroOrden, categoria } = req.body;
+    if(categoria){
+      const newLayer = await apiModel.addLayer(nombreCapa, descripcion, numeroOrden, categoria);
+      if(newLayer === null){
+        res.status(500).send("The category chosen does not exist, could not create this layer");
+      }else{
+        res.status(200).json({
+          message: "Layer added successfully",
+          category: newLayer,
+        });
+      }
+    }
+    else{
+      res.status(500).send("You need writing an existing category to create a new layer");
+    }  
+    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -94,6 +122,7 @@ module.exports = {
   getCategoryById,
   getLayerById,
   addCategory,
+  addLayer,
 };
 
 

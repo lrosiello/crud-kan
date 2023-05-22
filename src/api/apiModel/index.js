@@ -77,6 +77,37 @@ const addCategory = async (nombreCategoria, descripcion, numeroOrden) => {
       );
 
       return newCategory.rows[0];
+
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
+
+const addLayer = async (nombreCapa, descripcion, numeroOrden, categoria) => {
+  try {
+    const existingCategory = await pool.query(
+      "SELECT * FROM categorias WHERE nombre_categoria = $1",
+      [categoria]
+    );
+
+    if (existingCategory.rows.length > 0) {
+      const response = await pool.query(
+        "INSERT INTO capas (nombre_capa, descripcion, numero_orden, categoria) VALUES ($1, $2, $3, $4)",
+        [nombreCapa, descripcion, numeroOrden, categoria]
+      );
+
+      const newLayer = await pool.query(
+        "SELECT * FROM capas WHERE nombre_capa = $1",
+        [nombreCapa]
+      );
+
+      return newLayer.rows[0];
+
     } else {
       return null;
     }
@@ -94,4 +125,5 @@ module.exports = {
   getCategoryById,
   getLayerById,
   addCategory,
+  addLayer,
 };

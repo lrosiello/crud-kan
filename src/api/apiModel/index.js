@@ -118,6 +118,28 @@ const addLayer = async (nombreCapa, descripcion, numeroOrden, categoria) => {
 };
 
 
+//DELETE
+
+const deleteCategory = async (id) => {
+  try {
+    await pool.query("DELETE FROM categorias WHERE id = $1", [id,]);
+    return;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
+const deleteLayer = async (id) => {
+  try {
+    await pool.query("DELETE FROM capas WHERE id = $1", [id,]);
+    return;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
 
 module.exports = {
   getCategories,
@@ -126,4 +148,6 @@ module.exports = {
   getLayerById,
   addCategory,
   addLayer,
+  deleteCategory,
+  deleteLayer,
 };

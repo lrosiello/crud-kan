@@ -94,21 +94,54 @@ const addCategory = async (req, res, next) => {
 const addLayer = async (req, res, next) => {
   try {
     const { nombreCapa, descripcion, numeroOrden, categoria } = req.body;
-    if(categoria){
+    
       const newLayer = await apiModel.addLayer(nombreCapa, descripcion, numeroOrden, categoria);
       if(newLayer === null){
         res.status(500).send("The category chosen does not exist, could not create this layer");
       }else{
         res.status(200).json({
           message: "Layer added successfully",
-          category: newLayer,
+          layer: newLayer,
         });
       }
-    }
-    else{
-      res.status(500).send("You need writing an existing category to create a new layer");
-    }  
+  
     
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
+
+//DELETE
+const deleteCategory = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (isNaN(id)) {
+      res.status(500).send("The id value is not valid");
+    } else {
+      await apiModel.deleteCategory(id);
+      res.status(200).json({message: "Category deleted successfully. Relationed layers could be deleted too"});  
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
+const deleteLayer = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (isNaN(id)) {
+      res.status(500).send("The id value is not valid");
+    } else {
+      await apiModel.deleteLayer(id);
+      res.status(200).json({message: "Layer deleted successfully."});  
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -123,6 +156,8 @@ module.exports = {
   getLayerById,
   addCategory,
   addLayer,
+  deleteCategory,
+  deleteLayer,
 };
 
 

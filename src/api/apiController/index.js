@@ -94,7 +94,7 @@ const addCategory = async (req, res, next) => {
 const addLayer = async (req, res, next) => {
   try {
     const { nombreCapa, descripcion, numeroOrden, categoria } = req.body;
-    
+    if(categoria){
       const newLayer = await apiModel.addLayer(nombreCapa, descripcion, numeroOrden, categoria);
       if(newLayer === null){
         res.status(500).send("The category chosen does not exist, could not create this layer");
@@ -104,7 +104,10 @@ const addLayer = async (req, res, next) => {
           layer: newLayer,
         });
       }
-  
+    }
+    else{
+      res.status(500).send("You need writing an existing category to create a new layer");
+    }  
     
   } catch (error) {
     console.error(error);

@@ -71,17 +71,21 @@ const getLayerById = async (req, res, next) => {
 const addCategory = async (req, res, next) => {
   try {
     const { nombreCategoria, descripcion, numeroOrden } = req.body;
-    if(nombreCategoria){
-      const newCategory = await apiModel.addCategory(nombreCategoria, descripcion, numeroOrden);
-      if(newCategory === null){
+    if (nombreCategoria) {
+      const newCategory = await apiModel.addCategory(
+        nombreCategoria,
+        descripcion,
+        numeroOrden
+      );
+      if (newCategory === null) {
         res.status(500).send("This category already exists, operation aborted");
-      }else{
+      } else {
         res.status(200).json({
           message: "Category added successfully",
           category: newCategory,
         });
       }
-    }else{
+    } else {
       res.status(500).send("Category name must be inserted");
     }
   } catch (error) {
@@ -94,28 +98,36 @@ const addCategory = async (req, res, next) => {
 const addLayer = async (req, res, next) => {
   try {
     const { nombreCapa, descripcion, numeroOrden, categoria } = req.body;
-    if(categoria){
-      const newLayer = await apiModel.addLayer(nombreCapa, descripcion, numeroOrden, categoria);
-      if(newLayer === null){
-        res.status(500).send("The category chosen does not exist, could not create this layer");
-      }else{
+    if (categoria) {
+      const newLayer = await apiModel.addLayer(
+        nombreCapa,
+        descripcion,
+        numeroOrden,
+        categoria
+      );
+      if (newLayer === null) {
+        res
+          .status(500)
+          .send(
+            "The category chosen does not exist, could not create this layer"
+          );
+      } else {
         res.status(200).json({
           message: "Layer added successfully",
           layer: newLayer,
         });
       }
+    } else {
+      res
+        .status(500)
+        .send("You need writing an existing category to create a new layer");
     }
-    else{
-      res.status(500).send("You need writing an existing category to create a new layer");
-    }  
-    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
   next();
 };
-
 
 //DELETE
 const deleteCategory = async (req, res, next) => {
@@ -126,7 +138,12 @@ const deleteCategory = async (req, res, next) => {
       res.status(500).send("The id value is not valid");
     } else {
       await apiModel.deleteCategory(id);
-      res.status(200).json({message: "Category deleted successfully. Relationed layers could be deleted too"});  
+      res
+        .status(200)
+        .json({
+          message:
+            "Category deleted successfully. Relationed layers could be deleted too",
+        });
     }
   } catch (error) {
     console.error(error);
@@ -143,7 +160,7 @@ const deleteLayer = async (req, res, next) => {
       res.status(500).send("The id value is not valid");
     } else {
       await apiModel.deleteLayer(id);
-      res.status(200).json({message: "Layer deleted successfully."});  
+      res.status(200).json({ message: "Layer deleted successfully." });
     }
   } catch (error) {
     console.error(error);
@@ -151,6 +168,62 @@ const deleteLayer = async (req, res, next) => {
   }
   next();
 };
+
+//UPDATE
+const updateCategory = async (req, res, next) => {
+  try {
+    const {nombreCategoria, descripcion, numeroOrden} = req.body;
+    const id = parseInt(req.params.id);
+
+    if (nombreCategoria) {
+    
+        await apiModel.updateCategory(nombreCategoria,descripcion,numeroOrden,id );
+        res.status(200).json({message:"Category updated successfully. Relationed layers could be updated too."});
+      
+    }else{
+      res.status(500).send("Category name must be inserted");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
+const updateLayer = async (req, res, next) => {
+  try {
+    const {nombreCapa, descripcion, numeroOrden, categoria} = req.body;
+    const id = parseInt(req.params.id);
+
+    if (categoria) {
+      const layerToUpdate = await apiModel.updateLayer(
+        nombreCapa,
+        descripcion,
+        numeroOrden,
+        categoria,
+        id
+      );
+      if (layerToUpdate === null) {
+        res
+          .status(500)
+          .send("The category chosen does not exist, could not create this layer");
+      } else {
+        res.status(200).json({
+          message: "Layer added successfully",
+          layer: layerToUpdate,
+        });
+      }
+    } else {
+      res.status(500).send("You need writing an existing category to create a new layer");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+  next();
+};
+
+
 
 module.exports = {
   getCategories,
@@ -161,8 +234,6 @@ module.exports = {
   addLayer,
   deleteCategory,
   deleteLayer,
+  updateCategory,
+  updateLayer,
 };
-
-
-
-

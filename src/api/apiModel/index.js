@@ -140,6 +140,59 @@ const deleteLayer = async (id) => {
   }
 };
 
+//UPDATE
+
+const updateCategory = async (nombreCategoria, descripcion, numeroOrden, id) => {
+  try {
+    
+    const response = await pool.query(
+      "UPDATE categorias SET nombre_categoria = $1, descripcion = $2, numero_orden = $3 WHERE id = $4",
+      [nombreCategoria, descripcion, numeroOrden, id]
+    );
+
+    return response.rows[0];
+
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
+const updateLayer = async (nombreCapa, descripcion, numeroOrden, categoria, id) => {
+  try {
+    
+    const existingCategory = await pool.query(
+      "SELECT * FROM categorias WHERE nombre_categoria = $1",
+      [categoria]
+    );
+
+    if (existingCategory.rows.length > 0) {
+
+      const response = await pool.query(
+        "UPDATE capas SET nombre_capa = $1, descripcion = $2, numero_orden = $3, categoria =$4 WHERE id = $5",
+        [nombreCapa, descripcion, numeroOrden, categoria, id]
+      );
+
+      const updatedLayer = await pool.query(
+        "SELECT * FROM capas WHERE nombre_capa = $1",
+        [nombreCapa]
+      );
+
+      return updatedLayer.rows[0];
+
+    } else {
+      return null;
+    }
+    
+  } catch (error) {
+    console.error(error);
+    throw new Error("Internal Server Error");
+  }
+};
+
+
+
+
 
 module.exports = {
   getCategories,
@@ -150,4 +203,6 @@ module.exports = {
   addLayer,
   deleteCategory,
   deleteLayer,
+  updateCategory,
+  updateLayer,
 };

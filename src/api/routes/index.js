@@ -11,7 +11,9 @@ const { getCategories,
         addCategory,
         addLayer,
         deleteCategory, 
-        deleteLayer } = require("../apiController/index");
+        deleteLayer, 
+        updateCategory,
+        updateLayer} = require("../apiController/index");
 
 
 //ENDPOINTS
@@ -23,5 +25,7 @@ router.post('/categories', addCategory);
 router.post('/layers', addLayer);
 router.delete('/categories/:id', deleteCategory);
 router.delete('/layers/:id', deleteLayer);
+router.put('/categories/:id', updateCategory);
+router.put('/layers/:id', updateLayer);
 
 module.exports = router;
